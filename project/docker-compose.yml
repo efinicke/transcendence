@@ -1,0 +1,110 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - db_net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready  -d $POSTGRES_DB -U $POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    depends_on:
+      - postgres
+    ports:
+      - "5555:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - db_net
+    restart: unless-stopped
+
+  backend:
+    container_name: nestjs_container
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    environment:
+      - DATABASE_URL
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_PORT
+      - POSTGRES_HOST
+      - FILES_DEST
+      - JWT_SECRET
+      - JWT_EXPIRATION_TIME
+      - TWO_FACTOR_AUTHENTICATION_APP_NAME
+      - JWT_REFRESH_TOKEN_SECRET
+      - JWT_REFRESH_TOKEN_EXPIRATION_TIME
+      - AT_SECRET
+      - RT_SECRET
+      - SECRET
+      - API_UID
+      - API_SECRET
+      - IP_PUBLIC
+      - DOMAIN
+      - CLIENT_REDIRECT_42
+    ports:
+      - '3000:3000'
+      - '8081:8081'
+      - '8082:8082'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules/
+    networks:
+      - front_net
+      - back_net
+      - db_net
+
+  frontend:
+    container_name: vuejs_container
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    environment:
+      - VUE_APP_AUTH42
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules/
+    depends_on:
+      - backend
+    networks:
+      - front_net
+      - back_net
+
+volumes:
+  postgres-data:
+  pgadmin-data:
+
+networks:
+  front_net:
+    driver: bridge
+  back_net:
+    driver: bridge
+  db_net:
+    driver: bridge

@@ -53,4 +53,11 @@ Pour lancer le projet, suivez les étapes ci-dessous :
 
 4. Pour jouer en local avec d'autres joueurs configurer la variable DOMAIN dans le .env avec l'adresse IP de votre PC (du réseau local). Dans le cas contraire l'adresse IP de bouclage est définie (localhost 127.0.0.1).
 
-5. Utiliser l'URL suivant pour accéder au site : `http://<adresse_IP>:<port>`. Par exemple, si votre adresse IP définie dans DOMAIN est `10.24.1.3` sachant que le frontend est sur le port `8080`, entrez `http://10.24.1.3:8080` dans le navigateur pour accéder au site. Tous les joueurs connectés sur le même réseau peuvent accéder à cette adresse.
+5. Dans le dossier contenant le Makefile, lancer le projet avec la commande :
+```bash
+    make
+```
+
+7. Utiliser l'URL suivant pour accéder au site : `http://<adresse_IP>:<port>`. Par exemple, si votre adresse IP définie dans DOMAIN est `10.24.1.3` sachant que le frontend est sur le port `8080`, entrez `http://10.24.1.3:8080` dans le navigateur pour accéder au site. Tous les joueurs connectés sur le même réseau peuvent accéder à cette adresse.
+
+
